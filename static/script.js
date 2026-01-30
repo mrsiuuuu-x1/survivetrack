@@ -58,22 +58,35 @@ if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
         (position) => {
             const { latitude, longitude } = position.coords;
-            
-            playerMarker.setLngLat([longitude, latitude]);
+
             currentUserPos = { lat: latitude, lng: longitude };
+            playerMarker.setLngLat([longitude, latitude]);
 
             if (!hasZoomed) {
                 console.log("GPS LOCKED. Zooming in...");
-                map.flyTo({ center: [longitude, latitude], zoom: 15, speed: 2 });
+
+                const loader = document.getElementById('gps-loader');
+                if (loader) loader.style.display = 'none';
+
+                map.flyTo({ center: [longitude, latitude], zoom: 16, speed: 3 });
                 hasZoomed = true;
-                addLog(`SIGNAL LOCKED: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`, "#00ff41");
+                
+                addLog(`UPLINK ESTABLISHED: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`, "#00ff41");
             }
         },
         (err) => {
             console.error("GPS ERROR:", err);
+            const loader = document.getElementById('gps-loader');
+            if (loader) {
+                loader.innerHTML = "<span style='color:red'>SIGNAL LOST. ENABLE GPS.</span>";
+            }
             addLog("GPS ERROR: ALLOW LOCATION ACCESS.", "red");
         },
-        { enableHighAccuracy: true }
+        { 
+            enableHighAccuracy: true, 
+            timeout: 10000,
+            maximumAge: 0
+        }
     );
 } else {
     addLog("ERROR: GPS NOT SUPPORTED.", "red");

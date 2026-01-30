@@ -57,6 +57,25 @@
         <main>
             <div id="map-frame">
                 <div id="map"></div>
+                <div id="gps-loader" style="
+                    position: absolute; 
+                    top: 0; left: 0; 
+                    width: 100%; height: 100%; 
+                    background: #050000; 
+                    z-index: 50; 
+                    display: flex; 
+                    flex-direction: column;
+                    justify-content: center; 
+                    align-items: center;
+                    border: 2px solid #ff3333;">
+                    <div style="font-family: 'VT323'; font-size: 3rem; color: #ff3333; text-shadow: 0 0 10px red;" class="blink-red">
+                        CONNECTING TO SATELLITE...
+                    </div>
+                    <div style="font-family: 'VT323'; font-size: 1.2rem; color: #ff3333; margin-top: 10px; opacity: 0.7;">
+                        TRIANGULATING POSITION
+                    </div>
+                </div>
+                
                 <div class="corner top-left"></div>
                 <div class="corner top-right"></div>
                 <div class="corner bottom-left"></div>
