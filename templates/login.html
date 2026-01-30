@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECURE LINK // SURVIVETRACK</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root {
+            --danger-color: #ff3333;
+            --bg-color: #050000;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--danger-color);
+            font-family: 'VT323', monospace;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            z-index: 100;
+            position: relative;
+        }
+
+        /* Glitchy Title Effect */
+        h1 {
+            font-size: 3.5rem;
+            text-shadow: 0 0 10px var(--danger-color), 0 0 20px var(--danger-color);
+            margin-bottom: 0;
+            letter-spacing: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--danger-color);
+            padding-bottom: 10px;
+        }
+        
+        input {
+            background: rgba(255, 51, 51, 0.1);
+            border: 2px solid var(--danger-color);
+            color: var(--danger-color);
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            padding: 15px;
+            width: 280px;
+            text-align: center;
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.2);
+            text-transform: uppercase;
+        }
+
+        input:focus {
+            box-shadow: 0 0 25px rgba(255, 51, 51, 0.6);
+            background: rgba(255, 51, 51, 0.2);
+        }
+
+        button {
+            margin-top: 30px;
+            background: var(--danger-color);
+            color: black;
+            font-family: 'VT323', monospace;
+            font-size: 1.8rem;
+            padding: 10px 40px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: white;
+            color: black;
+            box-shadow: 0 0 30px white;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 1; text-shadow: 0 0 10px var(--danger-color); }
+            50% { opacity: 0.8; text-shadow: 0 0 20px var(--danger-color); }
+            100% { opacity: 1; text-shadow: 0 0 10px var(--danger-color); }
+        }
+
+        .alert-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <div class="login-container">
+        <div class="alert-icon">⚠️</div>
+        <h1>SYSTEM LOCKDOWN</h1>
+        <p>UNAUTHORIZED BIOMETRICS DETECTED</p>
+        
+        <form action="/" method="POST">
+            <label for="username" style="font-size: 1.2rem;">> IDENTIFY SURVIVOR:</label><br><br>
+            <input type="text" name="username" placeholder="ENTER CALLSIGN" required autofocus autocomplete="off">
+            <br>
+            <button type="submit">ACCESS SYSTEM</button>
+        </form>
+    </div>
+</body>
+</html>

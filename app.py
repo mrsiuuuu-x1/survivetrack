@@ -1,11 +1,14 @@
 import os
 import json
 import requests
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from dotenv import load_dotenv
 
 load_dotenv()
 app = Flask(__name__)
+
+# Security key
+app.secret_key = "flavortown_secure_bunker_key"
 
 # DB setup
 DB_FILE = "signals.json"
@@ -27,20 +30,30 @@ def save_signal(new_signal):
     with open(DB_FILE, 'w') as f:
         json.dump(signals, f)
 
-# routes
-@app.route("/")
-def index():
+# login
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        session['user'] = username
+        return redirect(url_for('map_view'))
+    return render_template('login.html')
+
+# map
+@app.route("/map")
+def map_view():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
     token = os.getenv("MAPBOX_TOKEN")
     style = os.getenv("MAPBOX_STYLE_URL")
     
-    if not token or not style:
-        print("CRITICAL ERROR: Mapbox keys are missing from .env file!")
-    
     return render_template("index.html", 
                            mapbox_token=token,
-                           mapbox_style=style)
+                           mapbox_style=style,
+                           user=session['user'])
 
-# AI scanner
+# API scanner
 @app.route("/api/scan", methods=["POST"])
 def scan_area():
     try:
@@ -56,7 +69,7 @@ def scan_area():
         - NO city names.
         """
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
         payload = { "contents": [{ "parts": [{"text": prompt_text}] }] }
         response = requests.post(url, json=payload)
         
@@ -69,22 +82,40 @@ def scan_area():
     except:
         return jsonify({"message": "SYSTEM ERROR: SIGNAL LOST.", "status": "error"})
 
-# send distress signal
-@app.route("/api/distress", methods=["POST"])
+# API send distress signal
+@app.route("/api/signal", methods=["POST"])
 def send_distress():
     try:
         data = request.json
+        if 'user' in session:
+            data['user'] = session['user']
         save_signal(data)
-        return jsonify({"status": "success", "message": "DISTRESS SIGNAL BROADCASTED GLOBALLY."})
+        return jsonify({"status": "success", "message": "DISTRESS SIGNAL BROADCASTED."})
     except Exception as e:
-        print(f"Distress Error: {e}")
         return jsonify({"status": "error", "message": "BROADCAST FAILED."})
 
-# getting signals
-@app.route("/api/distress", methods=["GET"])
+# API get signals
+@app.route("/api/signals", methods=["GET"])
 def get_distress():
     signals = load_signals() 
     return jsonify(signals)
+
+# API chat
+@app.route('/api/gemini', methods=['POST'])
+def gemini_chat():
+    data = request.json
+    user_message = data.get('message', '')
+    api_key = os.getenv("GEMINI_API_KEY")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "contents": [{
+            "parts": [{"text": "You are a survival AI. Be extremely concise. Max 2 sentences. " + user_message}]
+        }]
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+    return jsonify(response.json())
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
