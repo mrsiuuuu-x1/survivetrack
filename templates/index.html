@@ -30,16 +30,69 @@
                 <div class="corner bottom-right"></div>
             </div>
 
-            <div id="sidebar">
-                <h2>// MISSION LOG</h2>
-                <div id="log-feed">
-                    <div class="log-entry"><span class="time">14:02</span> > System initialized.</div>
-                    <div class="log-entry"><span class="time">14:02</span> > Bio-signs: NEGATIVE.</div>
+            <h3 style="color: #ff3333; margin-bottom: 5px;">// MISSION LOG</h3>
+
+                <div id="log-container" style="
+                    height: 150px; 
+                    overflow-y: auto; 
+                    border: 1px solid #ff3333; 
+                    padding: 10px; 
+                    background: rgba(20, 0, 0, 0.5); 
+                    font-family: 'VT323', monospace; 
+                    margin-bottom: 20px;">
+    
+                    <div class="log-entry">> System initialized.</div>
+                    <div class="log-entry">> Bio-signs: NEGATIVE.</div>
+                    <div class="log-entry">> GPS Signal: SEARCHING...</div>
+                </div>
+                
+                <div id="bio-panel" style="margin-bottom: 20px; border-bottom: 2px solid #ff3333; padding-bottom: 10px;">
+                    <h3 style="color: #ff3333; margin: 0 0 10px 0;">VITAL SIGNS</h3>
+
+                    <div style="margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                            <span>HEALTH</span>
+                            <span id="health-val">100%</span>
+                        </div>
+                        <div style="width: 100%; background: #330000; height: 10px; border: 1px solid #ff3333;">
+                            <div id="health-bar" style="width: 100%; background: #ff3333; height: 100%; transition: width 0.5s;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                            <span>INFECTION</span>
+                            <span id="infection-val" style="color: #00ff41;">0%</span>
+                        </div>
+                        <div style="width: 100%; background: #001100; height: 10px; border: 1px solid #00ff41;">
+                            <div id="infection-bar" style="width: 0%; background: #00ff41; height: 100%; transition: width 0.5s;"></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="controls">
                     <button onclick="scanArea()">INITIATE SCAN</button>
                     <button class="danger" onclick="panicMode()">DISTRESS SIGNAL</button>
+                </div>
+                
+                <button onclick="scanForLoot()" style="
+                    background: #00ff41;
+                    color: black;
+                    width: 100%;
+                    padding: 15px;
+                    font-family: 'VT323';
+                    font-size: 1.5rem;
+                    border: none;
+                    margin-top: 10px;
+                    cursor: pointer;
+                    font-weight: bold;">
+                    SCAN FOR SUPPLIES    
+                </button>
+                <div id="inventory-panel" style="margin-top: 30px; border-top: 2px solid #00ff41; padding-top: 10px;">
+                    <h3 style="color: #00ff41; margin: 0;">BACKPACK [0/5]</h3>
+                    <ul id="inventory-list" style="list-style: none; padding: 0; color: white; font-size: 1.2rem;">
+                        <li style="opacity: 0.5;">(EMPTY)</li>
+                    </ul>
                 </div>
             </div>
         </main>

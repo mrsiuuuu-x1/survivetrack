@@ -1,3 +1,4 @@
+import random
 import os
 import json
 import requests
@@ -116,6 +117,33 @@ def gemini_chat():
 
     response = requests.post(url, headers=headers, json=payload)
     return jsonify(response.json())
+
+# loot system
+@app.route('/api/loot', methods=['POST'])
+def spawn_loot():
+    data = request.json
+    user_lat = data.get('lat')
+    user_lng = data.get('lng')
+
+    loot_items = [
+        "MRE Ration Pack", "Antibiotics", "9mm Ammo Box", 
+        "Clean Water", "Geiger Counter Battery", "Tactical Knife"
+    ]
+    stash_locations = []
+
+    #generate 3 random loot spots
+    for _ in range(3):
+        offset_lat = random.uniform(-0.003,0.003)
+        offset_lng = random.uniform(-0.003,0.003)
+
+        stash = {
+            "id": random.randint(1000,9999),
+            "lat": user_lat + offset_lat,
+            "lng": user_lng + offset_lng,
+            "item": random.choice(loot_items)
+        }
+        stash_locations.append(stash)
+    return jsonify(stash_locations)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
