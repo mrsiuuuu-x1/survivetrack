@@ -1,0 +1,160 @@
+:root {
+    --main-color: #ff3333;
+    --dim-color: #550000;
+    --bg-color: #050505;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--main-color);
+    font-family: 'VT323', monospace;
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
+}
+
+.scanlines {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle,transparent 60%,black 100%);
+    pointer-events: none;
+    z-index: 11;
+}
+
+/* UI LAYOUT */
+.ui-container {
+    padding: 20px;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 20;
+    position: relative;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--main-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+h1 {font-size: 4rem; margin: 0; text-shadow: 4px 4px 0px #000; letter-spacing: 5px;}
+.subtitle {color: #888; font-size: 1.2rem;}
+
+main {display: flex; flex: 1; gap: 20px;}
+
+#map-frame {
+    flex: 3;
+    position: relative;
+    border: 1px solid var(--main-color);
+    box-shadow: 0 0 20px rgba(255,0,0,0.2);
+}
+
+#map {width: 100%; height: 100%; filter: sepia(100%) hue-rotate(-50deg) saturate(300%) contrast(1.2);}
+
+#sidebar {
+    flex: 1;
+    border: 1px solid var(--dim-color);
+    padding: 20px;
+    background: rgba(20,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.log-entry {margin-bottom: 10px; font-size: 1.2rem; border-bottom: 1px dashed #330000;}
+.time {color: #888;}
+.controls {margin-bottom: auto;}
+
+button {
+    background: black;
+    color: var(--main-color);
+    border: 2px solid var(--main-color);
+    font-family: 'VT323',monospace;
+    font-size: 1.5rem;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--main-color);
+    color: black;
+    box-shadow: 0 0 15px var(--main-color);
+}
+
+.blink-red {animation: blink 1s infinite;}
+@keyframes blink {0% {opacity: 1;} 50% {opacity: 0.2;} 100% {opacity: 1;}}
+
+.mapboxgl-marker {
+    width: 20px;
+    height: 20px;
+    background-color: var(--main-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--main-color), 0 0 20px var(--main-color);
+    border: 2px solid #fff;
+    cursor: pointer;
+}
+
+.mapboxgl-marker::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 1px solid var(--main-color);
+    transform: translate(-50%,-50%);
+    animation: ping 2s infinite;
+}
+
+@keyframes ping {
+    0% {width: 100%; height: 100%; opacity: 1;}
+    100% {width: 300%; height: 300%; opacity: 0;}
+}
+
+/* custom radar dot */
+.survivor-marker {
+    width: 20px;
+    height: 20px;
+    background-color: #ff3333;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #ff0000;
+    border: 2px solid white;
+}
+
+/* pulsing effect */
+.survivor-marker::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid #ff3333;
+    animation: ping 1.5s infinite;
+}
+
+@keyframes ping {
+    0% {transform: scale(1); opacity: 1;}
+    100% {transform: scale(3); opacity: 0;}
+}
+
+/* Distress Marker */
+.distress-marker {
+    width: 25px;
+    height: 25px;
+    background-color: #ffcc00;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ffcc00;
+    cursor: pointer;
+    animation: beacon-pulse 1.5s infinite alternate;
+}
+
+@keyframes beacon-pulse {
+    0% {transform: scale(1); opacity: 1;}
+    100% {transform: scale(1.3); opacity: 0.7;}
+}

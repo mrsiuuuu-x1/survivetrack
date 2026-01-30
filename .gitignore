@@ -1,0 +1,15 @@
+# Environment & Secrets
+.env
+.env.local
+__pycache__/
+*.pyc
+logs/
+*.log
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.tmp.driveupload/
+*.tmp
+desktop.ini
+$RECYCLE.BIN/

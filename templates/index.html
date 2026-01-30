@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SURVIVETRACK // SYSTEM FAILURE</title>
+    
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet'/>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <div class="ui-container">
+        <header>
+            <div class="status-box">
+                <span>THREAT LEVEL:</span> <span class="blink-red">CRITICAL</span>
+            </div>
+        </header>
+
+        <main>
+            <div id="map-frame">
+                <div id="map"></div>
+                <div class="corner top-left"></div>
+                <div class="corner top-right"></div>
+                <div class="corner bottom-left"></div>
+                <div class="corner bottom-right"></div>
+            </div>
+
+            <div id="sidebar">
+                <h2>// MISSION LOG</h2>
+                <div id="log-feed">
+                    <div class="log-entry"><span class="time">14:02</span> > System initialized.</div>
+                    <div class="log-entry"><span class="time">14:02</span> > Bio-signs: NEGATIVE.</div>
+                </div>
+                
+                <div class="controls">
+                    <button onclick="scanArea()">INITIATE SCAN</button>
+                    <button class="danger" onclick="panicMode()">DISTRESS SIGNAL</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const MAPBOX_TOKEN = "{{ mapbox_token }}";
+        const MAPBOX_STYLE = "{{ mapbox_style }}";
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
