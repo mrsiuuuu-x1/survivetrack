@@ -154,10 +154,7 @@ setInterval(async () => {
         signals.forEach(sig => {
             const lat = parseFloat(sig.lat);
             const lng = parseFloat(sig.lng);
-            if (isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) {
-                console.warn("Bad Signal Ignored:", sig);
-                return;
-            }
+            if (isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) return;
             const div = document.createElement('div');
             div.style.width = '20px';
             div.style.height = '20px';
@@ -176,12 +173,20 @@ setInterval(async () => {
 
             const m = new mapboxgl.Marker(div)
                 .setLngLat([lng, lat])
-                .setPopup(new mapboxgl.Popup({offset: 25}).setHTML(
-                    `<strong style="color:black">DISTRESS SIGNAL</strong><br>
-                     <span style="color:black">${sig.time}</span>`
-                ))
+                .setPopup(new mapboxgl.Popup({ offset: 25 }) 
+                .setHTML(`
+                    <h3 style="margin: 0; color: #ffcc00; font-size: 1.4rem;">
+                         ${sig.username.toUpperCase()}
+                    </h3>
+                    <p style="margin: 5px 0 0 0; color: white; font-size: 1.1rem;">
+                        REQ: ASSISTANCE
+                    </p>
+                    <small style="color: #888;">
+                        TIME: ${sig.time}
+                    </small>
+                `))
                 .addTo(map);
-            
+
             distressMarkers.push(m);
         });
     } catch (e) {
