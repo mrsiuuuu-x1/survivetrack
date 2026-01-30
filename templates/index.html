@@ -9,15 +9,48 @@
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet'/>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <style>
+        body { margin: 0; overflow: hidden; background: #050000; }
+        
+        main {
+            display: flex;
+            height: calc(100vh - 50px);
+        }
+
+        #map-frame {
+            flex-grow: 1;
+            position: relative;
+            border-right: 2px solid #ff3333;
+        }
+
+        #map { width: 100%; height: 100%; }
+
+        .sidebar {
+            width: 400px;
+            min-width: 350px;
+            padding: 20px;
+            background: rgba(10, 0, 0, 0.95);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            main { flex-direction: column; }
+            .sidebar { width: 100%; height: 40%; border-top: 2px solid #ff3333; }
+        }
+    </style>
 </head>
 <body>
     <div class="scanlines"></div>
     <div class="vignette"></div>
 
     <div class="ui-container">
-        <header>
+        <header style="height: 50px; display: flex; align-items: center; padding: 0 20px; border-bottom: 2px solid #ff3333;">
             <div class="status-box">
-                <span>THREAT LEVEL:</span> <span class="blink-red">CRITICAL</span>
+                <span style="color: #ff3333; font-family: 'VT323'; font-size: 1.5rem;">THREAT LEVEL: <span class="blink-red" style="font-weight:bold;">CRITICAL</span></span>
             </div>
         </header>
 
@@ -30,27 +63,31 @@
                 <div class="corner bottom-right"></div>
             </div>
 
-            <h3 style="color: #ff3333; margin-bottom: 5px;">// MISSION LOG</h3>
-
-                <div id="log-container" style="
-                    height: 150px; 
-                    overflow-y: auto; 
-                    border: 1px solid #ff3333; 
-                    padding: 10px; 
-                    background: rgba(20, 0, 0, 0.5); 
-                    font-family: 'VT323', monospace; 
-                    margin-bottom: 20px;">
-    
-                    <div class="log-entry">> System initialized.</div>
-                    <div class="log-entry">> Bio-signs: NEGATIVE.</div>
-                    <div class="log-entry">> GPS Signal: SEARCHING...</div>
-                </div>
+            <div class="sidebar">
                 
-                <div id="bio-panel" style="margin-bottom: 20px; border-bottom: 2px solid #ff3333; padding-bottom: 10px;">
-                    <h3 style="color: #ff3333; margin: 0 0 10px 0;">VITAL SIGNS</h3>
+                <div>
+                    <h3 style="color: #ff3333; margin: 0 0 5px 0; font-family: 'VT323'; letter-spacing: 2px;">// MISSION LOG</h3>
+                    <div id="log-container" style="
+                        height: 150px; 
+                        overflow-y: auto; 
+                        border: 1px solid #ff3333; 
+                        padding: 10px; 
+                        background: rgba(20, 0, 0, 0.5); 
+                        font-family: 'VT323', monospace; 
+                        display: flex;
+                        flex-direction: column;">
+                        
+                        <div class="log-entry" style="opacity: 0.7; color: white;">> System initialized.</div>
+                        <div class="log-entry" style="opacity: 0.7; color: white;">> Bio-signs: NEGATIVE.</div>
+                        <div class="log-entry" style="opacity: 0.7; color: white;">> GPS Signal: SEARCHING...</div>
+                    </div>
+                </div>
 
-                    <div style="margin-bottom: 10px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                <div id="bio-panel" style="border-bottom: 2px solid #ff3333; padding-bottom: 15px;">
+                    <h3 style="color: #ff3333; margin: 0 0 10px 0; font-family: 'VT323'; letter-spacing: 2px;">VITAL SIGNS</h3>
+
+                    <div style="margin-bottom: 10px; font-family: 'VT323'; color: #ff3333;">
+                        <div style="display: flex; justify-content: space-between; font-size: 1.1rem;">
                             <span>HEALTH</span>
                             <span id="health-val">100%</span>
                         </div>
@@ -59,43 +96,44 @@
                         </div>
                     </div>
 
-                    <div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <div style="font-family: 'VT323'; color: #00ff41;">
+                        <div style="display: flex; justify-content: space-between; font-size: 1.1rem;">
                             <span>INFECTION</span>
-                            <span id="infection-val" style="color: #00ff41;">0%</span>
+                            <span id="infection-val">0%</span>
                         </div>
                         <div style="width: 100%; background: #001100; height: 10px; border: 1px solid #00ff41;">
                             <div id="infection-bar" style="width: 0%; background: #00ff41; height: 100%; transition: width 0.5s;"></div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="controls">
-                    <button onclick="scanArea()">INITIATE SCAN</button>
-                    <button class="danger" onclick="panicMode()">DISTRESS SIGNAL</button>
+
+                <div class="controls" style="display: flex; flex-direction: column; gap: 10px;">
+                    <button onclick="scanArea()" style="padding: 10px; background: transparent; border: 1px solid #ff3333; color: #ff3333; font-family: 'VT323'; font-size: 1.2rem; cursor: pointer;">INITIATE SCAN</button>
+                    <button class="danger" onclick="panicMode()" style="padding: 10px; background: transparent; border: 1px solid #ff3333; color: #ff3333; font-family: 'VT323'; font-size: 1.2rem; cursor: pointer; text-shadow: 0 0 5px red;">DISTRESS SIGNAL</button>
+                    
+                    <button onclick="scanForLoot()" style="
+                        background: #00ff41;
+                        color: black;
+                        width: 100%;
+                        padding: 15px;
+                        font-family: 'VT323';
+                        font-size: 1.5rem;
+                        border: none;
+                        cursor: pointer;
+                        font-weight: bold;
+                        box-shadow: 0 0 10px #00ff41;">
+                        SCAN FOR SUPPLIES    
+                    </button>
                 </div>
-                
-                <button onclick="scanForLoot()" style="
-                    background: #00ff41;
-                    color: black;
-                    width: 100%;
-                    padding: 15px;
-                    font-family: 'VT323';
-                    font-size: 1.5rem;
-                    border: none;
-                    margin-top: 10px;
-                    cursor: pointer;
-                    font-weight: bold;">
-                    SCAN FOR SUPPLIES    
-                </button>
-                <div id="inventory-panel" style="margin-top: 30px; border-top: 2px solid #00ff41; padding-top: 10px;">
-                    <h3 style="color: #00ff41; margin: 0;">BACKPACK [0/5]</h3>
-                    <ul id="inventory-list" style="list-style: none; padding: 0; color: white; font-size: 1.2rem;">
+
+                <div id="inventory-panel" style="border-top: 2px solid #00ff41; padding-top: 15px;">
+                    <h3 style="color: #00ff41; margin: 0; font-family: 'VT323'; letter-spacing: 2px;">BACKPACK [0/5]</h3>
+                    <ul id="inventory-list" style="list-style: none; padding: 0; color: white; font-family: 'VT323'; font-size: 1.2rem; margin-top: 10px;">
                         <li style="opacity: 0.5;">(EMPTY)</li>
                     </ul>
                 </div>
-            </div>
-        </main>
+
+            </div> </main>
     </div>
 
     <script>

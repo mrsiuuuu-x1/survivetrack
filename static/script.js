@@ -1,32 +1,29 @@
-// --- GLOBAL VARIABLES ---
 let currentUserPos = { lat: 0, lng: 0 };
 let distressMarkers = [];
 let hasZoomed = false;
 let inventory = [];
-let activeMarker = null; // Track the open marker to delete it later
+let activeMarker = null;
 let health = 100;
 let infection = 0;
 let gameActive = true;
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
-// --- 1. THE TERMINAL LOGGING SYSTEM (With Auto-Scroll) ---
-// --- 1. THE TERMINAL LOGGING SYSTEM (Fixed Auto-Scroll) ---
+// logging system
 function addLog(message, color = "white") {
     const box = document.getElementById('log-container');
     if (!box) return; 
 
-    // FORCE CSS: Ensure the box has a height so it CAN scroll
-    box.style.height = "150px";       // Fixed height
-    box.style.overflowY = "auto";     // Force scrollbar
-    box.style.display = "flex";       // Stack items
+    box.style.height = "150px";
+    box.style.overflowY = "auto";
+    box.style.display = "flex";
     box.style.flexDirection = "column";
 
     const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     
     const entry = document.createElement('div');
     entry.style.marginBottom = "5px";
-    entry.style.flexShrink = "0";     // Prevent shrinking
+    entry.style.flexShrink = "0";
     entry.style.color = color;
     
     if (color === 'red' || color === '#ff3333') {
@@ -37,13 +34,12 @@ function addLog(message, color = "white") {
     
     box.appendChild(entry);
     
-    // AUTO-SCROLL FIX: Slight delay to ensure the browser renders the text first
     setTimeout(() => {
         box.scrollTop = box.scrollHeight;
     }, 50);
 }
 
-// --- 2. MAP INITIALIZATION ---
+// map intialization
 const map = new mapboxgl.Map({
     container: 'map',
     style: MAPBOX_STYLE,
@@ -57,7 +53,7 @@ const el = document.createElement('div');
 el.className = 'survivor-marker';
 const playerMarker = new mapboxgl.Marker(el).setLngLat([0, 0]).addTo(map);
 
-// --- 3. GPS TRACKER ---
+// gps tracker
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
         (position) => {
@@ -83,7 +79,7 @@ if (navigator.geolocation) {
     addLog("ERROR: GPS NOT SUPPORTED.", "red");
 }
 
-// --- 4. PANIC BUTTON ---
+// panic btn
 async function panicMode() {
     if (currentUserPos.lat === 0 && currentUserPos.lng === 0) {
         addLog("WAITING FOR GPS...", "yellow");
@@ -108,7 +104,7 @@ async function panicMode() {
     }
 }
 
-// --- 5. AI SCANNER ---
+// ai scanner
 async function scanArea() {
     addLog("ANALYZING ENVIRONMENT...", "cyan");
     try {
@@ -118,19 +114,18 @@ async function scanArea() {
             body: JSON.stringify(currentUserPos)
         });
         const data = await res.json();
-        addLog(data.message, "#ffcc00"); // AI Message in yellow
+        addLog(data.message, "#ffcc00");
     } catch { 
         addLog("SCAN FAILED.", "red"); 
     }
 }
 
-// --- 6. CHECK FOR DISTRESS SIGNALS (Loop) ---
+// distress signal
 setInterval(async () => {
     try {
         const res = await fetch("/api/distress");
         const signals = await res.json();
-        
-        // Remove old markers to prevent duplicates
+
         distressMarkers.forEach(m => m.remove());
         distressMarkers = [];
 
@@ -154,7 +149,6 @@ setInterval(async () => {
     } catch (e) {}
 }, 3000);
 
-// --- 7. SURVIVAL STATS LOOP ---
 setInterval(() => {
     if (!gameActive) return;
 
@@ -170,12 +164,10 @@ setInterval(() => {
 
 function updateBioMonitor() {
     const healthVal = document.getElementById('health-val');
-    // Safety check if elements exist
     if (healthVal) {
         healthVal.innerText = Math.floor(health) + "%";
         document.getElementById('infection-val').innerText = infection + "%";
-        
-        // Fixed typo: 'health-bar' instead of 'heath-bar'
+
         const healthBar = document.getElementById('health-bar') || document.getElementById('heath-bar');
         if (healthBar) healthBar.style.width = health + "%";
         
@@ -187,8 +179,7 @@ function checkGameOver() {
     if (infection >= 100 || health <= 0) {
         gameActive = false;
         addLog("CRITICAL FAILURE: SYSTEM SHUTDOWN.", "red");
-        
-        // Small delay before the alert so they see the log
+
         setTimeout(() => {
             alert("YOU DID NOT SURVIVE.");
             location.reload();
@@ -196,7 +187,6 @@ function checkGameOver() {
     }
 }
 
-// --- 8. INVENTORY RENDERER ---
 function renderInventory() {
     const list = document.getElementById('inventory-list');
     const header = document.querySelector('#inventory-panel h3');
@@ -229,20 +219,20 @@ function renderInventory() {
     }
 }
 
-// --- 9. ITEM ACTIONS (USE / DROP / COLLECT) ---
+// item actions (use/drop/grab)
 window.useItem = function(index, itemName) {
     let used = false;
 
     if (itemName.includes("Antibiotics")) {
         infection -= 30;
         if (infection < 0) infection = 0;
-        addLog("💉 ANTIBIOTICS ADMINISTERED.", "#00ff41");
+        addLog("ANTIBIOTICS ADMINISTERED.", "#00ff41");
         used = true;
     } 
     else if (itemName.includes("Ration") || itemName.includes("Water")) {
         health += 20;
         if (health > 100) health = 100;
-        addLog("🥫 RATIONS CONSUMED.", "#00ff41");
+        addLog("RATIONS CONSUMED.", "#00ff41");
         used = true;
     }
 
@@ -275,7 +265,7 @@ window.collectItem = function(itemName) {
     }
 };
 
-// --- 10. LOOT SPAWNER ---
+// loot spawner
 function scanForLoot() {
     const center = map.getCenter();
     
@@ -302,7 +292,6 @@ function scanForLoot() {
                 .setLngLat([cache.lng, cache.lat])
                 .addTo(map);
 
-            // Force Styles for Popup (Fixes Black Box Issue)
             const popupHTML = `
                 <div style="color: #00ff41; font-family: 'VT323', monospace; text-align: center;">
                     <strong style="font-size: 1.2rem; text-transform: uppercase;">SUPPLY CACHE</strong>
