@@ -6,6 +6,7 @@ let activeMarker = null;
 let health = 100;
 let infection = 0;
 let gameActive = true;
+let username = prompt("ENTER YOUR CALLSIGN:", "RANGER-01") || "UNKNOWN";
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
@@ -114,7 +115,8 @@ async function panicMode() {
             body: JSON.stringify({
                 lat: currentUserPos.lat,
                 lng: currentUserPos.lng,
-                time: new Date().toLocaleTimeString()
+                time: new Date().toLocaleTimeString(),
+                username: username
             })
         });
         addLog("SIGNAL SENT.", "#00ff41");
@@ -174,7 +176,7 @@ setInterval(async () => {
 
             const m = new mapboxgl.Marker(div)
                 .setLngLat([lng, lat])
-                .setPopup(new mapboxgl.Popup({offset: 25}).setHTML(
+                .setPopup(new mapboxgl.Popup({offset: 25, closeButton: false}).setHTML(
                     `<strong style="color:black">DISTRESS SIGNAL</strong><br>
                      <span style="color:black">${sig.time}</span>`
                 ))

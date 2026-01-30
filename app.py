@@ -155,7 +155,8 @@ def handle_distress():
         signal = {
             "lat": data.get('lat'),
             "lng": data.get('lng'),
-            "time": data.get('time')
+            "time": data.get('time'),
+            "username": data.get('username', 'UNKNOWN SURVIVOR')
         }
         distress_signals.append(signal)
 
