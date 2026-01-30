@@ -175,7 +175,7 @@ setInterval(async () => {
             const m = new mapboxgl.Marker(div)
                 .setLngLat([lng, lat])
                 .setPopup(new mapboxgl.Popup({offset: 25}).setHTML(
-                    `<strong style="color:black">⚠️ DISTRESS SIGNAL</strong><br>
+                    `<strong style="color:black">DISTRESS SIGNAL</strong><br>
                      <span style="color:black">${sig.time}</span>`
                 ))
                 .addTo(map);
