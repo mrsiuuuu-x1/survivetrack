@@ -55,38 +55,44 @@ const playerMarker = new mapboxgl.Marker(el).setLngLat([0, 0]).addTo(map);
 
 // gps tracker
 if (navigator.geolocation) {
+    const gpsOptions = {
+        enableHighAccuracy: true,
+        timeout: 15000, 
+        maximumAge: 0   
+    };
+
     navigator.geolocation.watchPosition(
         (position) => {
-            const { latitude, longitude } = position.coords;
-
+            const { latitude, longitude, accuracy } = position.coords;
             currentUserPos = { lat: latitude, lng: longitude };
             playerMarker.setLngLat([longitude, latitude]);
 
-            if (!hasZoomed) {
-                console.log("GPS LOCKED. Zooming in...");
+            const loaderText = document.querySelector('#gps-loader div:last-child');
+            if (loaderText) {
+                loaderText.innerText = `PRECISION: ${Math.floor(accuracy)} METERS...`;
+            }
 
+            if (accuracy > 100 && !hasZoomed) {
+                return;
+            }
+
+            if (!hasZoomed) {
+                console.log(`GPS LOCKED. Precision: ${accuracy}m`);
                 const loader = document.getElementById('gps-loader');
                 if (loader) loader.style.display = 'none';
-
-                map.flyTo({ center: [longitude, latitude], zoom: 16, speed: 3 });
+                map.flyTo({ center: [longitude, latitude], zoom: 17, speed: 3 });
                 hasZoomed = true;
                 
-                addLog(`UPLINK ESTABLISHED: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`, "#00ff41");
+                addLog(`UPLINK ESTABLISHED: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`, "#00ff41");
             }
         },
         (err) => {
             console.error("GPS ERROR:", err);
             const loader = document.getElementById('gps-loader');
-            if (loader) {
-                loader.innerHTML = "<span style='color:red'>SIGNAL LOST. ENABLE GPS.</span>";
-            }
-            addLog("GPS ERROR: ALLOW LOCATION ACCESS.", "red");
+            if (loader) loader.innerHTML = "<span style='color:red'>SIGNAL LOST. RETRYING...</span>";
+            addLog("GPS SIGNAL LOST.", "red");
         },
-        { 
-            enableHighAccuracy: true, 
-            timeout: 10000,
-            maximumAge: 0
-        }
+        gpsOptions
     );
 } else {
     addLog("ERROR: GPS NOT SUPPORTED.", "red");
