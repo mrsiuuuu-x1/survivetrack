@@ -335,3 +335,16 @@ function scanForLoot() {
         addLog("SCAN COMPLETE: CACHES DETECTED.", "#00ff41");
     });
 }
+
+function forceUplink() {
+    console.log("FORCE UPLINK INITIATED.");
+    const loader = document.getElementById('gps-loader');
+    if (loader) loader.style.display = 'none';
+    if (currentUserPos.lat !== 0) {
+        map.flyTo({ center: [currentUserPos.lng, currentUserPos.lat], zoom: 15, speed: 3 });
+        hasZoomed = true;
+        addLog("⚠️ UPLINK FORCED. SIGNAL UNSTABLE.", "red");
+    } else {
+        alert("NO GPS SIGNAL RECEIVED YET. CANNOT FORCE.");
+    }
+}
