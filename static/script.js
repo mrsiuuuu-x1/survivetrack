@@ -143,29 +143,48 @@ async function scanArea() {
 setInterval(async () => {
     try {
         const res = await fetch("/api/distress");
+        if (!res.ok) return;
+        
         const signals = await res.json();
-
         distressMarkers.forEach(m => m.remove());
         distressMarkers = [];
 
         signals.forEach(sig => {
+            const lat = parseFloat(sig.lat);
+            const lng = parseFloat(sig.lng);
+            if (isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) {
+                console.warn("Bad Signal Ignored:", sig);
+                return;
+            }
             const div = document.createElement('div');
-            div.style.width = '25px';
-            div.style.height = '25px';
+            div.style.width = '20px';
+            div.style.height = '20px';
             div.style.backgroundColor = '#ffcc00';
             div.style.borderRadius = '50%';
             div.style.border = '2px solid white';
             div.style.boxShadow = '0 0 20px #ffcc00';
             div.style.cursor = 'pointer';
-            
+            div.animate([
+                { transform: 'scale(1)', opacity: 1 },
+                { transform: 'scale(2.5)', opacity: 0 }
+            ], {
+                duration: 1500,
+                iterations: Infinity
+            });
+
             const m = new mapboxgl.Marker(div)
-                .setLngLat([sig.lng, sig.lat])
-                .setPopup(new mapboxgl.Popup({offset: 25}).setText(`${sig.time}`))
+                .setLngLat([lng, lat])
+                .setPopup(new mapboxgl.Popup({offset: 25}).setHTML(
+                    `<strong style="color:black">⚠️ DISTRESS SIGNAL</strong><br>
+                     <span style="color:black">${sig.time}</span>`
+                ))
                 .addTo(map);
             
             distressMarkers.push(m);
         });
-    } catch (e) {}
+    } catch (e) {
+        console.error("Signal Loop Error:", e);
+    }
 }, 3000);
 
 setInterval(() => {

@@ -187,3 +187,39 @@ button:hover {
 .collect-btn:hover {
     background: white;
 }
+
+/* DISTRESS SIGNAL RADAR EFFECT */
+.distress-beacon {
+    width: 30px;
+    height: 30px;
+    background: #ffcc00;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 20px #ffcc00;
+    animation: pulse-warning 1s infinite;
+    z-index: 1;
+}
+
+.distress-beacon::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    border: 2px solid #ffcc00;
+    border-radius: 50%;
+    opacity: 0;
+    animation: radar-wave 2s infinite;
+}
+
+@keyframes pulse-warning {
+    0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 204, 0, 0); }
+    100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
+}
+
+@keyframes radar-wave {
+    0% { width: 0px; height: 0px; opacity: 1; }
+    100% { width: 150px; height: 150px; opacity: 0; }
+}

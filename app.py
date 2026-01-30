@@ -145,6 +145,28 @@ def spawn_loot():
         stash_locations.append(stash)
     return jsonify(stash_locations)
 
+
+distress_signals = []
+
+@app.route('/api/distress', methods=['GET','POST'])
+def handle_distress():
+    if request.method == 'POST':
+        data = request.json
+        signal = {
+            "lat": data.get('lat'),
+            "lng": data.get('lng'),
+            "time": data.get('time')
+        }
+        distress_signals.append(signal)
+
+        if len(distress_signals) > 10:
+            distress_signals.pop(0)
+
+        return jsonify({"status": "Signal Broadcasted"})
+    else:
+        return jsonify(distress_signals)
+    
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
