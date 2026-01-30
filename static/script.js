@@ -343,7 +343,7 @@ function forceUplink() {
     if (currentUserPos.lat !== 0) {
         map.flyTo({ center: [currentUserPos.lng, currentUserPos.lat], zoom: 15, speed: 3 });
         hasZoomed = true;
-        addLog("⚠️ UPLINK FORCED. SIGNAL UNSTABLE.", "red");
+        addLog("UPLINK FORCED. SIGNAL UNSTABLE.", "red");
     } else {
         alert("NO GPS SIGNAL RECEIVED YET. CANNOT FORCE.");
     }
