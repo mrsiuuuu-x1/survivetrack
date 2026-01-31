@@ -6,7 +6,7 @@ let activeMarker = null;
 let health = 100;
 let infection = 0;
 let gameActive = true;
-let username = prompt("ENTER YOUR CALLSIGN:", "RANGER-01") || "UNKNOWN";
+let username = localStorage.getItem("survivor_name") || "RANGER-01";
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
