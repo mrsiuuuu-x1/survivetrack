@@ -1,6 +1,7 @@
 let currentUserPos = { lat: 0, lng: 0 };
 let distressMarkers = [];
 let zombieMarkers = [];
+let ammo = 6;
 let hasZoomed = false;
 let inventory = [];
 let activeMarker = null;
@@ -335,6 +336,14 @@ window.collectItem = function(itemName) {
     }
 
     inventory.push(itemName);
+
+    if (Math.random() > 0.5) {
+        const foundAmmo = Math.floor(Math.random() * 3) + 1;
+        ammo += foundAmmo;
+        updateAmmoUI();
+        addLog(`FOUND ${foundAmmo} ROUNDS OF AMMO.`, "#00ff41");
+        addLog(`CURRENT AMMO: [ ${ammo} ]`, "yellow");
+    }
     renderInventory();
     addLog(`COLLECTED: ${itemName}`, "#00ff41");
 
@@ -435,11 +444,18 @@ function spawnZombies() {
         el.addEventListener('click', (e) => {
             e.stopPropagation();
 
+            if (ammo <= 0) {
+                addLog("CLICK... CLICK... NO AMMO!", "red");
+                return;
+            }
+            ammo--;
+            updateAmmoUI()
+            addLog(`AMMO REMAINING: [ ${ammo} ]`, "yellow");
+
             el.innerHTML = '💥';
             el.style.textShadow = '0 0 20px yellow';
             el.style.transform = 'scale(1.5)';
-            addLog("TARGET ELIMINATED. +10XP", "#00ff41");
-
+            addLog("TARGET ELIMINATED.", "#00ff41");
             infection -= 5;
             if (infection < 0) infection = 0;
             updateBioMonitor();
@@ -453,4 +469,13 @@ function spawnZombies() {
     }
     addLog("WARNING: INFECTED ACTIVITY NEARBY.", "red");
 }
-setInterval(spawnZombies,9000);
+setInterval(spawnZombies,11000);
+
+function updateAmmoUI() {
+    const el = document.getElementById('ammo-val');
+    if (el) {
+        el.innerText = ammo;
+        if (ammo === 0) el.style.color = "red";
+        else el.style.color = "white";
+    }
+}
