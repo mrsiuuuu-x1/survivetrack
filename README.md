@@ -6,8 +6,6 @@
 
 **SurviveTrack** is a browser-based **Augmented Reality (AR) Survival Horror Game** that turns your real-world neighborhood into a zombie-infested wasteland. Using your device's GPS, you must scavenge for supplies, fight off the infected, and signal for help—all within a retro-futuristic terminal interface.
 
-![Project Banner](https://via.placeholder.com/1000x300/000000/ff3333?text=SURVIVETRACK+//+SYSTEM+FAILURE)
-
 ---
 
 ## Game Features
