@@ -172,6 +172,53 @@
             </div> </main>
     </div>
 
+    <div id="game-over-screen" style="
+        display: none; 
+        position: fixed; 
+        top: 0; left: 0; 
+        width: 100%; height: 100%; 
+        background: rgba(20, 0, 0, 0.95); 
+        z-index: 9999; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        text-align: center;
+        border: 5px solid red;">
+    
+        <h1 class="blink-red" style="
+            color: red; 
+            font-size: 5rem; 
+            text-shadow: 0 0 20px red; 
+            font-family: 'VT323'; 
+            margin: 0;">
+            FATAL ERROR
+        </h1>
+        
+        <p style="
+            color: white; 
+            font-size: 2rem; 
+            font-family: 'VT323'; 
+            text-shadow: 0 0 10px white;">
+            BIO-SIGNS CRITICAL. SIGNAL LOST.
+        </p>
+
+        <div style="font-size: 4rem; margin: 20px;">💀</div>
+
+        <button onclick="location.reload()" style="
+            background: black; 
+            border: 2px solid red; 
+            color: red; 
+            font-size: 1.5rem; 
+            padding: 15px 40px; 
+            margin-top: 20px; 
+            cursor: pointer; 
+            font-family: 'VT323'; 
+            text-transform: uppercase;
+            box-shadow: 0 0 15px red;">
+            REBOOT SYSTEM
+        </button>
+    </div>
+    
     <script>
         const MAPBOX_TOKEN = "{{ mapbox_token }}";
         const MAPBOX_STYLE = "{{ mapbox_style }}";

@@ -258,13 +258,17 @@ function updateBioMonitor() {
 
 function checkGameOver() {
     if (infection >= 100 || health <= 0) {
+        if (!gameActive) return;
         gameActive = false;
-        addLog("CRITICAL FAILURE: SYSTEM SHUTDOWN.", "red");
-
-        setTimeout(() => {
-            alert("YOU DID NOT SURVIVE.");
-            location.reload();
+        const deathInterval = setInterval(() => {
+            sfx.alarm();
         }, 1000);
+        const screen = document.getElementById('game-over-screen');
+        if (screen) {
+            screen.style.display = 'flex';
+        }
+
+        addLog("CRITICAL FAILURE: SYSTEM SHUTDOWN.", "red");
     }
 }
 
