@@ -197,6 +197,7 @@ setInterval(async () => {
                 `))
                 .addTo(map);
 
+            sfx.alarm();
             distressMarkers.push(m);
         });
     } catch (e) {
@@ -336,6 +337,7 @@ window.collectItem = function(itemName) {
     }
 
     inventory.push(itemName);
+    sfx.loot();
 
     if (Math.random() > 0.5) {
         const foundAmmo = Math.floor(Math.random() * 3) + 1;
@@ -448,6 +450,8 @@ function spawnZombies() {
                 addLog("CLICK... CLICK... NO AMMO!", "red");
                 return;
             }
+
+            sfx.shoot();
             ammo--;
             updateAmmoUI()
             addLog(`AMMO REMAINING: [ ${ammo} ]`, "yellow");
@@ -479,3 +483,83 @@ function updateAmmoUI() {
         else el.style.color = "white";
     }
 }
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+const sfx = {
+    shoot: () => {
+        const bufferSize = audioCtx.sampleRate * 0.2;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 1000;
+
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+
+        noise.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        noise.start();
+    },
+
+    empty: () => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+    },
+
+    loot: () => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+    },
+
+    alarm: () => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5)
+    }
+};
+
+document.body.addEventListener('click', () => {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+        console.log("AUDIO SYSTEM UNLOCKED");
+    }
+}, {once: true});
