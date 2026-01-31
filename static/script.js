@@ -209,6 +209,31 @@ setInterval(() => {
     infection += 1;
     health -= 0.5;
 
+    // proximity check
+    if (currentUserPos.lat !== 0 && zombieMarkers.length > 0) {
+        const playerloc = new mapboxgl.LngLat(currentUserPos.lng, currentUserPos.lat);
+        let inDangerZone = false;
+        let closestDist = 9999;
+
+        zombieMarkers.forEach(marker => {
+            const zombieLoc = marker.getLngLat();
+            const dist = playerloc.distanceTo(zombieLoc);
+
+            if (dist < 50) {
+                inDangerZone = true;
+                if (dist < closestDist) closestDist = dist;
+            }
+        });
+
+        if (inDangerZone) {
+            infection += 5;
+            addLog(`DANGER: INFECTED NEARBY (${Math.floor(closestDist)}m)`, "red");
+
+            document.body.style.transform = `translate(${Math.random()*5}px, ${Math.random()*5}px)`;
+            setTimeout(() => document.body.style.transform = 'none', 100);
+        }
+    }
+
     if (infection > 100) infection = 100;
     if (health < 0) health = 0;
 
@@ -428,4 +453,4 @@ function spawnZombies() {
     }
     addLog("WARNING: INFECTED ACTIVITY NEARBY.", "red");
 }
-setInterval(spawnZombies,15000);
+setInterval(spawnZombies,9000);
