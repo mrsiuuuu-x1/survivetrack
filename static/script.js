@@ -401,20 +401,31 @@ function spawnZombies() {
         el.innerHTML = '🧟';
         el.style.fontSize = '30px';
         el.style.textShadow = '0 0 10px red';
-        el.style.cursor = 'pointer';
+        el.style.cursor = 'crosshair';
 
         const marker = new mapboxgl.Marker(el)
             .setLngLat([zLng,zLat])
-            .setPopup(new mapboxgl.Popup({ offset: 25, closeButton: false })
-            .setHTML(`
-                <strong style="color: #ff3333; font-family: 'VT323'; font-size: 1.2rem;">
-                    WALKER DETECTED
-                </strong>
-                `))
             .addTo(map);
+
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            el.innerHTML = '💥';
+            el.style.textShadow = '0 0 20px yellow';
+            el.style.transform = 'scale(1.5)';
+            addLog("TARGET ELIMINATED. +10XP", "#00ff41");
+
+            infection -= 5;
+            if (infection < 0) infection = 0;
+            updateBioMonitor();
+
+            setTimeout(() => {
+                marker.remove();
+            },500);
+        });
 
         zombieMarkers.push(marker);
     }
     addLog("WARNING: INFECTED ACTIVITY NEARBY.", "red");
 }
-setInterval(spawnZombies,30000);
+setInterval(spawnZombies,15000);
