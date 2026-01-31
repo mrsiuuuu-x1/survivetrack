@@ -148,6 +148,7 @@ setInterval(async () => {
         if (!res.ok) return;
         
         const signals = await res.json();
+        
         distressMarkers.forEach(m => m.remove());
         distressMarkers = [];
 
@@ -155,15 +156,20 @@ setInterval(async () => {
             const lat = parseFloat(sig.lat);
             const lng = parseFloat(sig.lng);
             if (isNaN(lat) || isNaN(lng) || lat === 0 || lng === 0) return;
-            const div = document.createElement('div');
-            div.style.width = '20px';
-            div.style.height = '20px';
-            div.style.backgroundColor = '#ffcc00';
-            div.style.borderRadius = '50%';
-            div.style.border = '2px solid white';
-            div.style.boxShadow = '0 0 20px #ffcc00';
-            div.style.cursor = 'pointer';
-            div.animate([
+
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'block';
+
+            const dot = document.createElement('div');
+            dot.style.width = '20px';
+            dot.style.height = '20px';
+            dot.style.backgroundColor = '#ffcc00';
+            dot.style.borderRadius = '50%';
+            dot.style.border = '2px solid white';
+            dot.style.boxShadow = '0 0 20px #ffcc00';
+            dot.style.cursor = 'pointer';
+
+            dot.animate([
                 { transform: 'scale(1)', opacity: 1 },
                 { transform: 'scale(2.5)', opacity: 0 }
             ], {
@@ -171,12 +177,14 @@ setInterval(async () => {
                 iterations: Infinity
             });
 
-            const m = new mapboxgl.Marker(div)
+            wrapper.appendChild(dot);
+
+            const m = new mapboxgl.Marker(wrapper)
                 .setLngLat([lng, lat])
                 .setPopup(new mapboxgl.Popup({ offset: 25 }) 
                 .setHTML(`
                     <h3 style="margin: 0; color: #ffcc00; font-size: 1.4rem;">
-                         ${sig.username.toUpperCase()}
+                         ⚠️ ${sig.username.toUpperCase()}
                     </h3>
                     <p style="margin: 5px 0 0 0; color: white; font-size: 1.1rem;">
                         REQ: ASSISTANCE
