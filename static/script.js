@@ -1,5 +1,6 @@
 let currentUserPos = { lat: 0, lng: 0 };
 let distressMarkers = [];
+let zombieMarkers = [];
 let hasZoomed = false;
 let inventory = [];
 let activeMarker = null;
@@ -382,3 +383,38 @@ function forceUplink() {
         alert("NO GPS SIGNAL RECEIVED YET. CANNOT FORCE.");
     }
 }
+
+function spawnZombies() {
+    if (currentUserPos === 0) return;
+
+    zombieMarkers.forEach(m => m.remove());
+    zombieMarkers = [];
+
+    for (let i=0; i<5; i++) {
+        const latOffset = (Math.random() - 0.5) * 0.006;
+        const lngOffset = (Math.random() - 0.5) * 0.006;
+
+        const zLat = currentUserPos.lat + latOffset;
+        const zLng = currentUserPos.lng + lngOffset;
+
+        const el = document.createElement('div');
+        el.innerHTML = '🧟';
+        el.style.fontSize = '30px';
+        el.style.textShadow = '0 0 10px red';
+        el.style.cursor = 'pointer';
+
+        const marker = new mapboxgl.Marker(el)
+            .setLngLat([zLng,zLat])
+            .setPopup(new mapboxgl.Popup({ offset: 25, closeButton: false })
+            .setHTML(`
+                <strong style="color: #ff3333; font-family: 'VT323'; font-size: 1.2rem;">
+                    WALKER DETECTED
+                </strong>
+                `))
+            .addTo(map);
+
+        zombieMarkers.push(marker);
+    }
+    addLog("WARNING: INFECTED ACTIVITY NEARBY.", "red");
+}
+setInterval(spawnZombies,30000);
