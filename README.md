@@ -41,7 +41,7 @@
 * **Frontend:** HTML5, CSS3, Vanilla JavaScript
 * **Maps:** Mapbox GL JS API
 * **Backend:** Python (Flask)
-* **Deployment:** Vercel, Render, or PythonAnywhere
+* **Deployment:** Vercel
 
 ---
 
